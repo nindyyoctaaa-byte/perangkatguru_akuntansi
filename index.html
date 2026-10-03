@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AkunKu - Belajar Akuntansi</title>
+<meta name="description" content="Belajar akuntansi dengan materi singkat, kuis, dan umpan balik instan.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--g:#16A34A;--g-d:#15803D;--g-l:#DCFCE7;--p:#FBCFE8;--p-l:#FDF2F8;--ink:#14231A;--mute:#5F6F66;--bad:#E11D48;--bad-l:#FFE4EA;--bg:#FFFDFE;--card:#FFFFFF;--line:#F3C6DD}
+@media(prefers-color-scheme:dark){:root{--ink:#EDF6F0;--mute:#9DB0A5;--bg:#0F1A14;--card:#17261D;--p-l:#2A1B25;--p:#5B2D45;--g-l:#133524;--bad-l:#3B1620;--line:#4A2C3D}}
+*{box-sizing:border-box}
+html{scroll-padding-top:70px}
+body{margin:0;font-family:Nunito,system-ui,Segoe UI,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:16px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--p);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:800;font-size:20px;color:var(--g);cursor:pointer;border:0;background:none;font-family:inherit}
+.logo span{color:var(--ink)}
+main{max-width:640px;margin:0 auto;padding:16px 16px 48px}
+h1{font-size:28px;line-height:1.2;margin:8px 0 8px;font-weight:800}
+h2{font-size:21px;margin:0 0 8px;font-weight:800}
+p{margin:0 0 12px}
+.mute{color:var(--mute);font-size:14px}
+.btn{display:inline-block;background:var(--g);color:#fff;border:0;border-radius:12px;padding:12px 20px;font:800 16px Nunito,sans-serif;cursor:pointer;min-height:44px}
+.btn:hover{background:var(--g-d)}
+.btn.ghost{background:transparent;color:var(--g);border:2px solid var(--g)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--g);outline-offset:2px}
+.grid{display:grid;gap:12px}
+.mapel{background:var(--p-l);border:2px solid var(--p);border-radius:16px;padding:16px;text-align:left;cursor:pointer;font:inherit;color:inherit;width:100%}
+.mapel:hover{border-color:var(--g)}
+.mapel[disabled]{opacity:.6;cursor:default}
+.mapel b{display:block;font-size:18px}
+.tag{display:inline-block;font-size:13px;font-weight:800;background:var(--g-l);color:var(--g-d);border-radius:20px;padding:2px 10px;margin-top:6px}
+.tag.off{background:var(--p);color:var(--ink)}
+.bar{height:10px;background:var(--p);border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--g);transition:width .3s}
+.back{background:none;border:0;color:var(--g);font:800 15px Nunito,sans-serif;cursor:pointer;padding:8px 0}
+.babrow{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--p);border-radius:14px;padding:14px;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.babrow:hover{border-color:var(--g)}
+.babrow .n{flex:none;width:36px;height:36px;border-radius:50%;background:var(--p);display:grid;place-items:center;font-weight:800}
+.babrow.done .n{background:var(--g);color:#fff}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tab{flex:1;padding:10px;border-radius:12px;border:2px solid var(--p);background:var(--card);font:800 15px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.tab.on{background:var(--g);border-color:var(--g);color:#fff}
+.ledger{background:var(--p-l) repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);border:2px solid var(--p);border-left:6px solid var(--g);border-radius:14px;padding:18px 18px 8px;margin:12px 0}
+.ledger h2{background:var(--p-l);display:inline-block;padding-right:8px}
+.ledger p,.ledger li{line-height:32px;margin:0}
+.ledger ul{margin:0 0 12px;padding-left:20px}
+.ex{background:var(--g-l);border-radius:12px;padding:12px 14px;margin:12px 0;line-height:1.6;font-size:15px}
+.nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--p);border-radius:12px;padding:12px 14px;margin:8px 0;font:600 16px Nunito,sans-serif;color:var(--ink);cursor:pointer;min-height:44px}
+.opt:hover:not([disabled]){border-color:var(--g)}
+.opt.ok{background:var(--g-l);border-color:var(--g)}
+.opt.no{background:var(--bad-l);border-color:var(--bad)}
+.fb{border-radius:12px;padding:12px 14px;margin:10px 0;font-size:15px}
+.fb.ok{background:var(--g-l)}.fb.no{background:var(--bad-l)}
+.score{font-size:56px;font-weight:800;color:var(--g);line-height:1}
+footer{text-align:center;color:var(--mute);font-size:13px;padding:16px}
+.role{display:flex;background:var(--p);border-radius:20px;padding:3px}
+.role button{border:0;background:none;padding:6px 14px;border-radius:16px;font:800 14px Nunito,sans-serif;color:var(--ink);cursor:pointer}
+.role button.on{background:var(--g);color:#fff}
+.fl{display:block;font-weight:800;font-size:14px;margin:12px 0}
+.fl input,.fl textarea,.fl select,.q{display:block;width:100%;margin-top:4px;padding:10px 12px;border:2px solid var(--p);border-radius:10px;font:400 16px Nunito,sans-serif;background:var(--card);color:var(--ink)}
+.paper{background:#fff;color:#000;border:2px solid var(--p);border-radius:8px;padding:16px;overflow-x:auto;font-size:14px;line-height:1.5}
+@media print{header,footer,.noprint{display:none!important}.paper{border:0;padding:0}body{background:#fff}}
+@media(min-width:600px){.grid.two{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header style="gap:8px;flex-wrap:wrap"><button class="logo" onclick="go(ROLE==='guru'?'hub':'home')" aria-label="Beranda">Akun<span>Ku</span></button><div class="role"><button id="rs" onclick="setRole('siswa')">Siswa</button><button id="rg" onclick="setRole('guru')">Guru</button></div><button id="ra" class="btn ghost" style="min-height:36px;padding:4px 12px;font-size:14px;display:none" onclick="acct()">Masuk</button></header>
+<main id="app"></main>
+<footer>AkunKu - prototipe belajar akuntansi</footer>
+
+<script>
+/* ===== DATA: tambah bab/mapel di sini ===== */
+var DATA=[
+{id:'dasar',nama:'Dasar-dasar Akuntansi',ikon:'📘',desk:'Mengenal akuntansi dari nol: fungsi, pengguna, dan konsep dasarnya.',aktif:true,
+bab:[{id:'b1',judul:'Pengertian, Tujuan, dan Peran Akuntansi',
+kartu:[
+{j:'Apa itu akuntansi?',h:'<p>Akuntansi adalah proses <b>mencatat, menggolongkan, meringkas, dan melaporkan</b> transaksi keuangan, lalu menafsirkan hasilnya.</p><p>Hasil akhirnya berupa informasi keuangan yang dipakai orang untuk mengambil keputusan.</p>',x:'Bu Rina berjualan nasi uduk. Setiap hari ia mencatat uang masuk dan keluar. Itu sudah akuntansi sederhana: dari catatan itu ia tahu untung atau rugi.'},
+{j:'Tujuan akuntansi',h:'<ul><li>Menyediakan informasi keuangan untuk pengambilan keputusan</li><li>Menilai kinerja dan posisi keuangan usaha</li><li>Menjadi pertanggungjawaban pengelola kepada pemilik</li></ul>',x:'Dengan laporan keuangan, pemilik toko bisa memutuskan apakah perlu menambah stok atau menekan biaya.'},
+{j:'Proses akuntansi',h:'<p>Kegiatan akuntansi berjalan berurutan:</p><ul><li>Mencatat transaksi</li><li>Menggolongkan ke kelompok yang sama</li><li>Meringkas menjadi angka total</li><li>Melaporkan dalam laporan keuangan</li><li>Menafsirkan hasilnya</li></ul>',x:'Transaksi: membeli beras Rp200.000. Dicatat, digolongkan sebagai beban/pembelian, diringkas bersama pembelian lain, lalu muncul di laporan.'},
+{j:'Pengguna informasi akuntansi',h:'<p><b>Pengguna internal:</b> pemilik, manajer, karyawan.</p><p><b>Pengguna eksternal:</b> investor, kreditor (bank), pemerintah (pajak), pemasok, dan pelanggan.</p>',x:'Bank membaca laporan keuangan untuk memutuskan apakah usaha layak diberi pinjaman. Bank adalah pengguna eksternal.'},
+{j:'Bidang akuntansi',h:'<ul><li><b>Akuntansi keuangan:</b> menyusun laporan untuk pihak luar</li><li><b>Akuntansi manajemen:</b> informasi untuk keputusan internal</li><li><b>Pemeriksaan (audit):</b> menguji kewajaran laporan</li><li><b>Perpajakan:</b> menghitung dan melaporkan pajak</li><li><b>Akuntansi pemerintahan:</b> mengelola dana publik</li></ul>',x:'Akuntan yang memeriksa laporan sebuah PT sebelum dipublikasikan bekerja di bidang pemeriksaan (audit).'},
+{j:'Transaksi: bahan baku akuntansi',h:'<p>Transaksi adalah peristiwa yang <b>memengaruhi keuangan usaha</b> dan <b>dapat diukur dengan uang</b>. Hanya peristiwa seperti ini yang dicatat.</p><p>Setiap transaksi harus punya bukti, misalnya faktur, nota, atau kuitansi.</p>',x:'Membeli meja tunai Rp1.000.000 adalah transaksi. Karyawan baru diterima bekerja belum dicatat, karena belum ada nilai uangnya.'}
+],
+kuis:[
+{q:'Pengertian akuntansi yang paling tepat adalah...',o:['Proses mencatat, menggolongkan, meringkas, dan melaporkan transaksi keuangan','Kegiatan menghitung uang di kasir','Pekerjaan membuat iklan produk','Kegiatan menyimpan arsip surat'],a:0,e:'Akuntansi adalah proses dari pencatatan sampai pelaporan, lalu hasilnya ditafsirkan untuk pengambilan keputusan.'},
+{q:'Tujuan utama akuntansi adalah...',o:['Menambah jumlah karyawan','Menyediakan informasi keuangan untuk pengambilan keputusan','Menentukan harga jual secara sepihak','Mengurangi pajak tanpa aturan'],a:1,e:'Informasi keuangan dipakai pemilik, manajer, dan pihak lain untuk membuat keputusan.'},
+{q:'Urutan proses akuntansi yang benar adalah...',o:['Melaporkan, mencatat, meringkas','Mencatat, menggolongkan, meringkas, melaporkan','Meringkas, mencatat, melaporkan','Menggolongkan, melaporkan, mencatat'],a:1,e:'Transaksi dicatat dahulu, digolongkan, diringkas, baru dilaporkan.'},
+{q:'Berikut yang termasuk pengguna INTERNAL informasi akuntansi adalah...',o:['Bank pemberi pinjaman','Kantor pajak','Manajer perusahaan','Investor luar'],a:2,e:'Pengguna internal berada di dalam perusahaan, seperti pemilik, manajer, dan karyawan.'},
+{q:'Bank memeriksa laporan keuangan sebelum memberi kredit. Bank termasuk pengguna...',o:['Internal','Eksternal','Karyawan','Pemilik'],a:1,e:'Bank berada di luar perusahaan sehingga termasuk pengguna eksternal (kreditor).'},
+{q:'Peristiwa yang dicatat sebagai transaksi adalah...',o:['Pemilik berencana membuka cabang','Karyawan baru diterima bekerja','Perusahaan membeli perlengkapan tunai Rp500.000','Pelanggan menanyakan harga'],a:2,e:'Transaksi memengaruhi keuangan dan dapat diukur dengan uang. Pembelian tunai memenuhi keduanya.'}
+]},
+{id:'b2',judul:'Profesi Akuntansi dan Etika',
+kartu:[
+{j:'Ragam profesi akuntansi',h:'<ul><li><b>Akuntan publik:</b> memberi jasa pemeriksaan (audit) secara independen</li><li><b>Akuntan manajemen:</b> bekerja di dalam perusahaan</li><li><b>Akuntan pemerintah:</b> bekerja di instansi pemerintah</li><li><b>Akuntan pendidik:</b> mengajar dan meneliti akuntansi</li></ul>',x:'Akuntan yang memeriksa laporan keuangan sebuah PT dari luar perusahaan berprofesi sebagai akuntan publik.'},
+{j:'Pencatat dan akuntan',h:'<p>Pencatat (bookkeeper) mengerjakan pencatatan transaksi rutin.</p><p>Akuntan melangkah lebih jauh: menganalisis transaksi, menyusun laporan keuangan, dan menafsirkan hasilnya untuk pengambilan keputusan.</p>',x:'Mencatat penjualan harian adalah tugas pencatat. Menjelaskan mengapa laba turun dan apa solusinya adalah tugas akuntan.'},
+{j:'Prinsip dasar etika profesi',h:'<ul><li><b>Integritas:</b> jujur dan tegas</li><li><b>Objektivitas:</b> tidak memihak dan bebas dari benturan kepentingan</li><li><b>Kompetensi dan kehati-hatian profesional</b></li><li><b>Kerahasiaan:</b> menjaga informasi klien dan perusahaan</li><li><b>Perilaku profesional:</b> menaati aturan dan menjaga nama baik profesi</li></ul>',x:'Organisasi profesi akuntan di Indonesia adalah Ikatan Akuntan Indonesia (IAI), yang menetapkan kode etik bagi anggotanya.'},
+{j:'Contoh pelanggaran etika',h:'<ul><li>Mengubah angka laporan agar laba tampak lebih besar</li><li>Membocorkan data keuangan klien kepada pihak lain</li><li>Menerima suap untuk menyetujui laporan yang tidak benar</li></ul><p>Pelanggaran dapat merugikan banyak pihak dan berujung sanksi.</p>',x:'Akuntan yang menceritakan kondisi keuangan kliennya kepada pesaing klien melanggar prinsip kerahasiaan.'},
+{j:'Sikap dan keterampilan akuntan',h:'<ul><li>Teliti, jujur, dan bertanggung jawab</li><li>Menguasai spreadsheet dan aplikasi akuntansi</li><li>Mau terus belajar karena aturan dan teknologi berkembang</li></ul>',x:'Siswa yang membiasakan mencocokkan angka dengan bukti transaksi sedang melatih ketelitian, modal utama seorang akuntan.'}
+],
+kuis:[
+{q:'Akuntan yang memeriksa laporan keuangan perusahaan secara independen disebut...',o:['Akuntan manajemen','Akuntan publik','Akuntan pemerintah','Akuntan pendidik'],a:1,e:'Akuntan publik memberi jasa pemeriksaan (audit) secara independen kepada klien.'},
+{q:'Akuntan yang bekerja di dalam perusahaan dan menyusun laporan untuk manajer disebut...',o:['Akuntan publik','Akuntan pendidik','Akuntan manajemen','Pemeriksa pajak'],a:2,e:'Akuntan manajemen bekerja di perusahaan dan menyediakan informasi untuk keputusan internal.'},
+{q:'Seorang akuntan menceritakan data keuangan kliennya kepada pesaing klien. Prinsip yang dilanggar adalah...',o:['Kerahasiaan','Kecepatan kerja','Efisiensi biaya','Kreativitas'],a:0,e:'Akuntan wajib menjaga kerahasiaan informasi klien dan tidak boleh membukanya tanpa izin.'},
+{q:'Mengubah angka laporan agar laba tampak besar bertentangan terutama dengan prinsip...',o:['Integritas','Kerahasiaan','Efisiensi','Penghematan'],a:0,e:'Manipulasi angka adalah ketidakjujuran, sehingga melanggar prinsip integritas.'},
+{q:'Organisasi profesi akuntan di Indonesia adalah...',o:['IAI','OJK','BPS','KPK'],a:0,e:'Ikatan Akuntan Indonesia (IAI) adalah organisasi profesi akuntan di Indonesia.'}
+]},
+{id:'b3',judul:'Jenis Usaha dan Bentuk Badan Usaha',
+kartu:[
+{j:'Jenis usaha menurut kegiatannya',h:'<ul><li><b>Jasa:</b> menjual layanan, misalnya salon dan bengkel</li><li><b>Dagang:</b> membeli lalu menjual kembali barang, misalnya toko dan minimarket</li><li><b>Manufaktur:</b> mengolah bahan baku menjadi barang jadi, misalnya pabrik roti</li></ul>',x:'Pabrik tahu membeli kedelai lalu mengolahnya menjadi tahu, jadi termasuk usaha manufaktur.'},
+{j:'Perbedaan yang memengaruhi pencatatan',h:'<p>Usaha jasa tidak memiliki persediaan barang dagang. Usaha dagang harus mencatat persediaan, pembelian, dan penjualan. Usaha manufaktur mencatat bahan baku, proses produksi, dan barang jadi.</p>',x:'Karena itu, laporan keuangan toko lebih rumit daripada salon: toko perlu menghitung harga pokok barang yang terjual.'},
+{j:'Bentuk badan usaha',h:'<ul><li><b>Perusahaan perseorangan:</b> dimiliki satu orang, tanggung jawab tidak terbatas</li><li><b>Firma:</b> dua orang atau lebih bersekutu menjalankan usaha</li><li><b>CV:</b> ada sekutu aktif yang mengelola dan sekutu pasif yang menanam modal</li><li><b>PT:</b> modal terbagi atas saham, tanggung jawab pemegang saham terbatas pada modal yang disetor</li></ul>',x:'Jika PT merugi besar, harta pribadi pemegang saham tidak ikut disita untuk melunasi utang perusahaan.'},
+{j:'Bentuk usaha dan modal',h:'<p>Pada perusahaan perseorangan, modal disebut <b>modal pemilik</b>. Pada PT, modal berasal dari penjualan <b>saham</b>.</p><p>Perbedaan ini terlihat pada bagian ekuitas di laporan posisi keuangan.</p>',x:'Warung milik Pak Joko memakai akun Modal Pak Joko. Sebuah PT memakai akun modal saham.'},
+{j:'Latihan mengklasifikasi',h:'<ul><li>Salon kecantikan: usaha jasa</li><li>Minimarket: usaha dagang</li><li>Pabrik sepatu: usaha manufaktur</li><li>Toko kelontong milik satu orang: perseorangan</li></ul>',x:'Coba klasifikasikan usaha di sekitar rumah Anda berdasarkan jenis kegiatan dan bentuk badan usahanya.'}
+],
+kuis:[
+{q:'Salon kecantikan termasuk usaha...',o:['Jasa','Dagang','Manufaktur','Pertambangan'],a:0,e:'Salon menjual layanan, bukan barang, sehingga termasuk usaha jasa.'},
+{q:'Minimarket yang membeli barang dari pemasok lalu menjualnya kembali termasuk usaha...',o:['Jasa','Manufaktur','Dagang','Konsultasi'],a:2,e:'Membeli dan menjual kembali barang adalah ciri usaha dagang.'},
+{q:'Perusahaan yang mengolah bahan baku menjadi barang jadi disebut perusahaan...',o:['Dagang','Jasa','Manufaktur','Perantara'],a:2,e:'Mengolah bahan baku menjadi barang jadi adalah kegiatan manufaktur.'},
+{q:'Bentuk badan usaha yang modalnya terbagi atas saham adalah...',o:['Perusahaan perseorangan','Firma','CV','Perseroan Terbatas (PT)'],a:3,e:'Modal PT terbagi atas saham, dan tanggung jawab pemegang saham terbatas pada modal yang disetor.'},
+{q:'Usaha milik satu orang dengan tanggung jawab tidak terbatas disebut...',o:['PT','Perusahaan perseorangan','Koperasi','Firma'],a:1,e:'Pemilik perusahaan perseorangan bertanggung jawab penuh, termasuk dengan harta pribadinya.'}
+]}]},
+{id:'persamaan',nama:'Persamaan Dasar Akuntansi',ikon:'⚖️',desk:'Aset, kewajiban, dan ekuitas.',aktif:false,bab:[]},
+{id:'jasa',nama:'Akuntansi Perusahaan Jasa',ikon:'🧾',desk:'Siklus akuntansi dari jurnal sampai laporan keuangan.',aktif:false,bab:[]},
+{id:'dagang',nama:'Akuntansi Perusahaan Dagang',ikon:'🛒',desk:'Persediaan, pembelian, penjualan, dan laporan dagang.',aktif:false,bab:[]}
+];
+var LULUS=70;
+/* ===== PROGRESS (disimpan di browser) ===== */
+function load(){try{return JSON.parse(localStorage.getItem('akunku')||'{}')}catch(e){return{}}}
+function save(p){try{localStorage.setItem('akunku',JSON.stringify(p))}catch(e){}}
+function pr(id){return load()[id]||{}}
+function setPr(id,v){var p=load();p[id]=Object.assign(p[id]||{},v);save(p);syncPr(id)}
+function subjPct(s){if(!s.bab.length)return 0;var n=0;s.bab.forEach(function(b){var r=pr(b.id);if(r.materi)n+=1/3;if(r.video)n+=1/3;if(r.lulus)n+=1/3});return Math.round(n/s.bab.length*100)}
+/* ===== STATE & RENDER ===== */
+var S={v:'home'},$=document.getElementById('app');
+function go(v,o){S=Object.assign({v:v},o||{});render();window.scrollTo(0,0)}
+function find(id){return DATA.filter(function(s){return s.id===id})[0]}
+function bar(p){return '<div class="bar" role="progressbar" aria-valuenow="'+p+'" aria-valuemin="0" aria-valuemax="100"><i style="width:'+p+'%"></i></div>'}
+function render(){
+ var h='';
+ if(S.v==='home'){
+  h='<h1>Belajar akuntansi, selangkah demi selangkah</h1><p class="mute">Materi singkat, kuis dengan jawaban langsung, dan progres yang terlihat. Pilih mata pelajaran untuk mulai.</p><div class="grid two">';
+  DATA.forEach(function(s,i){var p=subjPct(s);
+   h+='<button class="mapel" '+(s.aktif?'onclick="go(\'subj\',{s:\''+s.id+'\'})"':'disabled')+'><span style="font-size:28px">'+s.ikon+'</span><b>'+s.nama+'</b><span class="mute">'+s.desk+'</span>'+(s.aktif?(i===0&&!p?'<span class="tag">Mulai dari sini</span>':bar(p)+'<span class="mute">Progres '+p+'%</span>'):'<span class="tag off">Segera hadir</span>')+'</button>'});
+  h+='</div>';
+ }
+ if(S.v==='subj'){var s=find(S.s);
+  h='<button class="back" onclick="go(\'home\')">Kembali</button><h1>'+s.nama+'</h1>'+bar(subjPct(s))+'<p class="mute" style="margin-top:6px">Progres '+subjPct(s)+'%</p><div class="grid">';
+  s.bab.forEach(function(b,i){var r=pr(b.id);
+   h+='<button class="babrow'+(r.lulus?' done':'')+'" onclick="go(\'bab\',{s:\''+s.id+'\',b:\''+b.id+'\',tab:\'materi\',i:0})"><span class="n">'+(r.lulus?'✓':(i+1))+'</span><span><b>'+b.judul+'</b><br><span class="mute">'+b.kartu.length+' kartu materi, '+b.kuis.length+' soal kuis'+(r.skor!=null?', skor terbaik '+r.skor:'')+'</span></span></button>'});
+  h+='</div>';
+ }
+ if(S.v==='bab'){var s=find(S.s),b=s.bab.filter(function(x){return x.id===S.b})[0],r=pr(b.id);
+  h='<button class="back" onclick="go(\'subj\',{s:\''+s.id+'\'})">'+s.nama+'</button><h2>'+b.judul+'</h2>'+
+  '<div class="tabs"><button class="tab'+(S.tab==='materi'?' on':'')+'" onclick="go(\'bab\',{s:\''+s.id+'\',b:\''+b.id+'\',tab:\'materi\',i:0})">Materi</button><button class="tab'+(S.tab==='video'?' on':'')+'" onclick="go(\'bab\',{s:S.s,b:S.b,tab:\'video\'})">Video'+(r.video?' ✓':'')+'</button><button class="tab'+(S.tab==='kuis'?' on':'')+'" onclick="startQuiz()">Kuis'+(r.lulus?' ✓':'')+'</button></div>';
+  h+=S.tab==='materi'?materi(b):S.tab==='video'?video(b):kuis(b);
+ }
+ if(['hub','edit','prev','auth'].indexOf(S.v)>-1)h=guru();
+ $.innerHTML=h;hdr();
+}
+function materi(b){var k=b.kartu[S.i],last=S.i===b.kartu.length-1;
+ return '<p class="mute">Kartu '+(S.i+1)+' dari '+b.kartu.length+'</p>'+bar((S.i+1)/b.kartu.length*100)+
+ '<div class="ledger"><h2>'+k.j+'</h2>'+k.h+'</div><div class="ex"><b>Contoh:</b> '+k.x+'</div>'+
+ '<div class="nav"><button class="btn ghost" onclick="S.i--;render()" '+(S.i?'':'disabled')+'>Sebelumnya</button>'+
+ (last?'<button class="btn" onclick="finishMateri()">Selesai, mulai kuis</button>':'<button class="btn" onclick="S.i++;render();window.scrollTo(0,0)">Lanjut</button>')+'</div>';}
+function finishMateri(){setPr(S.b,{materi:true});startQuiz()}
+function startQuiz(){go('bab',{s:S.s,b:S.b,tab:'kuis',qi:0,sc:0,ans:null,done:false})}
+function kuis(b){
+ if(S.done){var pct=Math.round(S.sc/b.kuis.length*100),ok=pct>=LULUS;
+  return '<div style="text-align:center;padding:16px 0"><div class="score">'+pct+'</div><p><b>'+(ok?'Lulus! Bab ini selesai.':'Belum lulus (minimal '+LULUS+').')+'</b></p><p class="mute">Benar '+S.sc+' dari '+b.kuis.length+' soal</p>'+
+  '<button class="btn" onclick="startQuiz()">Ulangi kuis</button> <button class="btn ghost" onclick="go(\'subj\',{s:\''+S.s+'\'})">Daftar bab</button>'+(ok?'':'<p class="mute" style="margin-top:12px">Baca ulang materi, lalu coba lagi.</p>')+'</div>';}
+ var q=b.kuis[S.qi],h='<p class="mute">Soal '+(S.qi+1)+' dari '+b.kuis.length+'</p>'+bar(S.qi/b.kuis.length*100)+'<h2 style="margin-top:12px">'+q.q+'</h2>';
+ q.o.forEach(function(t,i){var c='';if(S.ans!==null){if(i===q.a)c=' ok';else if(i===S.ans)c=' no'}
+  h+='<button class="opt'+c+'" '+(S.ans!==null?'disabled':'onclick="pick('+i+')"')+'>'+String.fromCharCode(65+i)+'. '+t+'</button>'});
+ if(S.ans!==null){var good=S.ans===q.a;h+='<div class="fb '+(good?'ok':'no')+'" role="status"><b>'+(good?'Benar.':'Kurang tepat.')+'</b> '+q.e+'</div><button class="btn" onclick="next()">'+(S.qi===b.kuis.length-1?'Lihat hasil':'Soal berikutnya')+'</button>'}
+ return h;}
+function pick(i){var b=cur();if(i===b.kuis[S.qi].a)S.sc++;S.ans=i;render()}
+function cur(){return find(S.s).bab.filter(function(x){return x.id===S.b})[0]}
+function next(){var b=cur();if(S.qi===b.kuis.length-1){var pct=Math.round(S.sc/b.kuis.length*100),old=pr(b.id).skor||0;
+  setPr(b.id,{skor:Math.max(old,pct),lulus:pr(b.id).lulus||pct>=LULUS});S.done=true}else{S.qi++;S.ans=null}render();window.scrollTo(0,0)}
+/* ===== VIDEO ===== (video tetap: isi field yt di DATA, mis. yt:'https://youtu.be/XXXXXXXXXXX') */
+function ytId(u){var m=String(u||'').match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/);return m?m[1]:''}
+function video(b){var r=pr(b.id),u=r.yt||b.yt||'',id=ytId(u);
+ return (id?'<div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000"><iframe style="position:absolute;inset:0;width:100%;height:100%;border:0" src="https://www.youtube.com/embed/'+id+'" title="Video '+esc(b.judul)+'" allowfullscreen></iframe></div>':'<div class="ledger"><h2>Video belum ditambahkan</h2><p>Tempel tautan YouTube di bawah untuk menampilkan video penjelasan bab ini.</p></div>')+
+ '<label class="fl">Tautan YouTube<input id="yt" value="'+esc(u)+'" placeholder="https://www.youtube.com/watch?v=..."></label><div class="nav" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn ghost" onclick="saveYt()">Simpan video</button>'+(id?'<button class="btn" onclick="setPr(S.b,{video:true});render()">'+(r.video?'Sudah ditonton ✓':'Tandai sudah ditonton')+'</button>':'')+'</div>'}
+function saveYt(){var v=document.getElementById('yt').value.trim();if(v&&!ytId(v)){alert('Tautan YouTube tidak dikenali.');return}setPr(S.b,{yt:v});render()}
+/* ===== TEACHER HUB ===== */
+var ROLE='siswa',FASE=['Fase E (Kelas X)','Fase F (Kelas XI-XII)'],ATPC=['Tujuan pembelajaran','Materi pokok','Alokasi (JP)','Asesmen','Semester'];
+var TPL={atp:{nama:'ATP',f:[['mapel','Mata pelajaran','m'],['kelas','Kelas','t'],['fase','Fase','f'],['elemen','Elemen / topik','t'],['cp','Capaian Pembelajaran','a']]},
+modul:{nama:'Modul Ajar',f:[['guru','Nama guru','t'],['sekolah','Sekolah','t'],['mapel','Mata pelajaran','m'],['kelas','Kelas','t'],['fase','Fase','f'],['waktu','Alokasi waktu','t'],['tujuan','Tujuan pembelajaran','a'],['paham','Pemahaman bermakna','a'],['pemantik','Pertanyaan pemantik','a'],['pendahuluan','Kegiatan pendahuluan','a'],['inti','Kegiatan inti','a'],['penutup','Kegiatan penutup','a'],['asesmen','Asesmen','a'],['pengayaan','Pengayaan dan remedial','a'],['refleksi','Refleksi guru dan siswa','a'],['lampiran','Lampiran (LKPD, bahan bacaan)','a']]}};
+function setRole(r){if(SB&&r==='guru'&&!(PROF&&PROF.role==='teacher')){if(USER)alert('Akun Anda bukan akun guru.');else go('auth',{reg:false});return}ROLE=r;go(r==='guru'?'hub':'home')}
+function hdr(){var a=document.getElementById('rs'),b=document.getElementById('rg');if(a){a.className=ROLE==='siswa'?'on':'';b.className=ROLE==='guru'?'on':'';var c=document.getElementById('ra');c.style.display=SB?'':'none';c.textContent=USER?'Keluar':'Masuk'}}
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function docs(){try{return JSON.parse(localStorage.getItem('akunku_docs')||'[]')}catch(e){return[]}}
+function saveDocs(a){try{localStorage.setItem('akunku_docs',JSON.stringify(a))}catch(e){alert('Penyimpanan browser tidak tersedia.')}}
+function newDoc(t){go('edit',{doc:{id:'d'+Date.now(),type:t,d:{},rows:t==='atp'?[['','','','','']]:[],at:Date.now()}})}
+function openDoc(id){go('edit',{doc:JSON.parse(JSON.stringify(docs().filter(function(x){return x.id===id})[0]))})}
+function prevDoc(id){go('prev',{doc:docs().filter(function(x){return x.id===id})[0]})}
+function delDoc(id){if(confirm('Hapus dokumen ini?')){saveDocs(docs().filter(function(x){return x.id!==id}));if(SB&&USER)SB.from('documents').delete().eq('id',id).then(function(){});fl()}}
+function saveDoc(){var a=docs(),d=S.doc;d.at=Date.now();d.title=TPL[d.type].nama+' - '+(d.d.mapel||'tanpa mapel')+(d.d.elemen?' - '+d.d.elemen:'');var i=a.findIndex(function(x){return x.id===d.id});if(i<0)a.push(d);else a[i]=d;saveDocs(a);if(SB&&USER)SB.from('documents').upsert({id:d.id,owner:USER.id,type:d.type,title:d.title,data:d.d,rows:d.rows,fase:d.d.fase||null,shared:!!d.shared,updated_at:new Date().toISOString()}).then(function(r){if(r.error)alert('Gagal menyimpan ke server: '+r.error.message)})}
+function listH(){var q=(S.q||'').toLowerCase(),a=docs().filter(function(x){return(!S.jf||x.type===S.jf)&&(x.title||'').toLowerCase().indexOf(q)>-1}).sort(function(a,b){return b.at-a.at});
+ return a.length?a.map(function(x){return '<div class="mapel" style="cursor:default"><b>'+esc(x.title)+'</b><span class="mute">'+TPL[x.type].nama+', '+esc(x.d.fase||'fase belum diisi')+', diperbarui '+new Date(x.at).toLocaleDateString('id-ID')+'</span><div class="nav" style="justify-content:flex-start;flex-wrap:wrap">'+(mine(x)?'<button class="btn ghost" onclick="openDoc(\''+x.id+'\')">Edit</button>':'')+'<button class="btn ghost" onclick="prevDoc(\''+x.id+'\')">Pratinjau</button>'+(mine(x)?'<button class="btn ghost" onclick="delDoc(\''+x.id+'\')">Hapus</button>':'')+'</div></div>'}).join(''):'<p class="mute">Belum ada dokumen yang cocok. Klik Buat ATP atau Buat Modul Ajar untuk memulai.</p>'}
+function fl(){document.getElementById('dl').innerHTML=listH()}
+function fld(f,v){var k=f[0],t=f[2],o;
+ if(t==='a')o='<textarea rows="3" oninput="S.doc.d.'+k+'=this.value">'+esc(v)+'</textarea>';
+ else if(t==='m'||t==='f'){var L=t==='m'?DATA.map(function(s){return s.nama}):FASE;o='<select onchange="S.doc.d.'+k+'=this.value"><option value="">Pilih</option>'+L.map(function(x){return '<option'+(x===v?' selected':'')+'>'+esc(x)+'</option>'}).join('')+'</select>'}
+ else o='<input value="'+esc(v)+'" oninput="S.doc.d.'+k+'=this.value">';
+ return '<label class="fl">'+f[1]+o+'</label>'}
+function guru(){
+ if(S.v==='auth')return authH();
+ if(S.v==='hub')return '<h1>Pusat perangkat ajar</h1><p class="mute">Susun ATP dan Modul Ajar langsung di sini, lalu unduh sebagai Word atau PDF. Dokumen tersimpan di browser ini.</p><div class="nav" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn" onclick="newDoc(\'atp\')">Buat ATP</button><button class="btn" onclick="newDoc(\'modul\')">Buat Modul Ajar</button></div><label class="fl">Cari dokumen<input class="q" placeholder="Judul atau mapel" oninput="S.q=this.value;fl()"></label><select class="q" aria-label="Jenis dokumen" onchange="S.jf=this.value;fl()"><option value="">Semua jenis</option><option value="atp">ATP</option><option value="modul">Modul Ajar</option></select><div class="grid" id="dl" style="margin-top:12px">'+listH()+'</div>';
+ if(S.v==='prev')return '<div class="noprint"><button class="back" onclick="go(\'hub\')">Kembali ke dokumen</button><div class="nav" style="justify-content:flex-start;flex-wrap:wrap;margin:0 0 12px"><button class="btn" onclick="dl()">Unduh Word</button><button class="btn ghost" onclick="window.print()">Cetak / simpan PDF</button><button class="btn ghost" onclick="go(\'edit\',{doc:S.doc})">Edit</button></div></div><div class="paper">'+docH(S.doc)+'</div>';
+ var d=S.doc,T=TPL[d.type],h='<button class="back" onclick="go(\'hub\')">Kembali</button><h1>'+T.nama+'</h1><button class="btn ghost" onclick="sample()">Isi contoh Bab 1</button>';
+ T.f.forEach(function(f){h+=fld(f,d.d[f[0]])});
+ if(d.type==='atp'){h+='<h2 style="margin-top:20px">Alur tujuan pembelajaran</h2>';
+  d.rows.forEach(function(r,i){h+='<div class="mapel" style="cursor:default"><b>Baris '+(i+1)+'</b>'+ATPC.map(function(c,j){return '<label class="fl">'+c+'<textarea rows="2" oninput="S.doc.rows['+i+']['+j+']=this.value">'+esc(r[j])+'</textarea></label>'}).join('')+'<button class="btn ghost" onclick="S.doc.rows.splice('+i+',1);render()">Hapus baris</button></div>'});
+  h+='<button class="btn ghost" style="margin-top:12px" onclick="S.doc.rows.push([\'\',\'\',\'\',\'\',\'\']);render()">Tambah baris</button>'}
+ if(SB)h+='<label class="fl"><input type="checkbox" style="display:inline;width:auto;margin-right:8px"'+(d.shared?' checked':'')+' onchange="S.doc.shared=this.checked">Bagikan ke guru lain</label>';
+ return h+'<div class="nav" style="margin-top:20px"><button class="btn ghost" onclick="saveDoc();go(\'hub\')">Simpan draf</button><button class="btn" onclick="saveDoc();go(\'prev\',{doc:S.doc})">Pratinjau</button></div>'}
+function docH(d){var T=TPL[d.type],b=function(s){return esc(s).replace(/\n/g,'<br>')},tb='<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%">',
+ h='<h2 style="text-align:center">'+(d.type==='atp'?'Alur Tujuan Pembelajaran (ATP)':'Modul Ajar')+'</h2>'+tb;
+ T.f.forEach(function(f){h+='<tr><th align="left" width="30%" valign="top">'+f[1]+'</th><td>'+b(d.d[f[0]])+'</td></tr>'});h+='</table>';
+ if(d.type==='atp')h+='<h3>Alur tujuan pembelajaran</h3>'+tb+'<tr><th>No</th>'+ATPC.map(function(c){return '<th>'+c+'</th>'}).join('')+'</tr>'+d.rows.map(function(r,i){return '<tr><td valign="top">'+(i+1)+'</td>'+r.map(function(v){return '<td valign="top">'+b(v)+'</td>'}).join('')+'</tr>'}).join('')+'</table>';
+ return h}
+function dl(){var h='<html><head><meta charset="utf-8"></head><body>'+docH(S.doc)+'</body></html>',a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob(['\ufeff',h],{type:'application/msword'}));a.download=(S.doc.title||'dokumen').replace(/[^\w\- ]+/g,'')+'.doc';a.click()}
+function sample(){var d=S.doc,m='Dasar-dasar Akuntansi';
+ if(d.type==='atp'){d.d=Object.assign(d.d,{mapel:m,kelas:'X',fase:FASE[0],elemen:'Akuntansi sebagai sistem informasi keuangan',cp:'Peserta didik mampu menjelaskan pengertian, tujuan, dan peran akuntansi serta pengguna informasinya.'});
+  d.rows=[['Menjelaskan pengertian dan tujuan akuntansi','Pengertian dan tujuan akuntansi','4','Kuis pilihan ganda','1'],['Mengidentifikasi pengguna informasi akuntansi','Pengguna internal dan eksternal','2','Penugasan studi kasus','1'],['Menjelaskan proses dan bidang akuntansi','Proses akuntansi dan bidang akuntansi','4','Tes tertulis','1']]}
+ else d.d=Object.assign(d.d,{mapel:m,kelas:'X',fase:FASE[0],waktu:'2 x 45 menit',tujuan:'Peserta didik mampu menjelaskan pengertian dan tujuan akuntansi.',paham:'Akuntansi menyediakan informasi keuangan untuk mengambil keputusan.',pemantik:'Bagaimana pemilik warung mengetahui untung atau rugi hariannya?',pendahuluan:'Salam, doa, dan apersepsi dengan pertanyaan pemantik (10 menit).',inti:'Siswa membaca kartu materi Bab 1, berdiskusi tentang pengguna informasi, lalu mengerjakan kuis (60 menit).',penutup:'Menyimpulkan materi dan refleksi (20 menit).',asesmen:'Kuis 6 soal di platform; lulus jika skor minimal 70.',pengayaan:'Remedial: baca ulang kartu materi. Pengayaan: studi kasus usaha di sekitar siswa.',refleksi:'Bagian mana yang paling mudah dan paling sulit dipahami hari ini?',lampiran:'Kartu materi dan soal kuis Bab 1.'});
+ render()}
+/* ===== SUPABASE: isi dua nilai ini dari Project Settings > API ===== */
+var SUPA_URL='',SUPA_KEY='',SB=null,USER=null,PROF=null;
+try{if(SUPA_URL&&SUPA_KEY&&window.supabase)SB=window.supabase.createClient(SUPA_URL,SUPA_KEY)}catch(e){}
+function mine(x){return !x.owner||!USER||x.owner===USER.id}
+function syncPr(id){if(!SB||!USER)return;var r=load()[id]||{};SB.from('progress').upsert({user_id:USER.id,chapter_id:id,materi:!!r.materi,video:!!r.video,skor:r.skor||0,lulus:!!r.lulus,yt:r.yt||null,updated_at:new Date().toISOString()}).then(function(){})}
+async function afterLogin(u){USER=u;var p=await SB.from('profiles').select('*').eq('id',u.id).single();PROF=p.data;
+ var g=await SB.from('progress').select('*').eq('user_id',u.id),o=load();(g.data||[]).forEach(function(r){o[r.chapter_id]={materi:r.materi,video:r.video,skor:r.skor,lulus:r.lulus,yt:r.yt}});save(o);
+ var d=await SB.from('documents').select('*');saveDocs((d.data||[]).map(function(x){return{id:x.id,type:x.type,title:x.title,d:x.data,rows:x.rows,at:Date.parse(x.updated_at),owner:x.owner,shared:x.shared}}))}
+async function initAuth(){hdr();if(!SB)return;var r=await SB.auth.getSession();if(r.data.session){await afterLogin(r.data.session.user);hdr();render()}}
+function acct(){if(USER)logout();else go('auth',{reg:false})}
+function authH(){var g=S.reg;return '<h1>'+(g?'Daftar akun':'Masuk')+'</h1>'+(SB?'':'<div class="fb no">Supabase belum dikonfigurasi. Isi SUPA_URL dan SUPA_KEY di index.html.</div>')+
+ (g?'<label class="fl">Nama lengkap<input id="an"></label><label class="fl">Peran<select id="ar"><option value="student">Siswa</option><option value="teacher">Guru</option></select></label>':'')+
+ '<label class="fl">Email<input id="ae" type="email" autocomplete="email"></label><label class="fl">Kata sandi (minimal 6 karakter)<input id="ap" type="password" autocomplete="current-password"></label><div id="am" class="mute" role="status"></div><div class="nav" style="justify-content:flex-start;flex-wrap:wrap"><button class="btn" onclick="doAuth()">'+(g?'Daftar':'Masuk')+'</button><button class="btn ghost" onclick="go(\'auth\',{reg:'+!g+'})">'+(g?'Sudah punya akun':'Buat akun baru')+'</button></div>'}
+async function doAuth(){if(!SB)return;var q=function(i){return document.getElementById(i)},m=q('am'),em=q('ae').value.trim(),pw=q('ap').value;
+ if(!em||pw.length<6){m.textContent='Isi email dan kata sandi (minimal 6 karakter).';return}
+ m.textContent='Memproses...';
+ var r=S.reg?await SB.auth.signUp({email:em,password:pw,options:{data:{full_name:q('an').value,role:q('ar').value}}}):await SB.auth.signInWithPassword({email:em,password:pw});
+ if(r.error){m.textContent=r.error.message;return}
+ if(!r.data.session){m.textContent='Cek email Anda untuk konfirmasi, lalu masuk.';return}
+ await afterLogin(r.data.user);ROLE=PROF&&PROF.role==='teacher'?'guru':'siswa';go(ROLE==='guru'?'hub':'home')}
+async function logout(){await SB.auth.signOut();USER=PROF=null;try{localStorage.removeItem('akunku');localStorage.removeItem('akunku_docs')}catch(e){}ROLE='siswa';go('home')}
+render();initAuth();
+</script>
+</body>
+</html>
